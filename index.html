@@ -195,6 +195,17 @@
   .sim-sub{font-size:.78rem;color:var(--texto-3);margin-top:10px}
   td.neg{color:var(--magenta)}
 
+  /* ---- tese de alta enfase: fundo lima, o unico bloco vibrante da pagina ---- */
+  .tese-alta{background:var(--lima-pura);color:var(--grafite);border-radius:3px;
+    padding:40px 32px 36px;margin:0 auto 34px}
+  .tese-alta .rot{color:var(--grafite);opacity:.72;display:block;margin-bottom:16px}
+  .tese-alta .n{font-family:var(--font-display);font-size:clamp(2.5rem,7.5vw,4.4rem);
+    font-weight:700;line-height:.95;margin:0 0 4px;font-variant-numeric:tabular-nums;
+    color:var(--grafite);letter-spacing:-.02em}
+  .tese-alta .n small{display:block;font-family:var(--font-text);font-size:.88rem;
+    font-weight:500;margin-top:10px;opacity:.8;letter-spacing:.02em}
+  .tese-alta p{color:var(--grafite);font-size:.98rem;margin:16px 0 0;max-width:70ch;opacity:.94}
+
   /* ---- footer maximalista ---- */
   .marca-gigante{display:block;width:100%;height:auto;color:var(--texto);margin:0 0 38px}
   footer{border-top:1px solid var(--line);overflow:hidden}
@@ -474,6 +485,16 @@
         o honorário. Basta acreditar que, dessas pessoas, mais de uma a cada 2.714 vale
         um atendimento.</p>
     </div>
+    <div class="tese-alta rv">
+      <span class="rot">E o teto — atendendo tudo o que hoje fica no escuro</span>
+      <div class="n"><span id="teseAno">R$ 210.112</span><small>por ano, líquidos, no cenário em que o agente atende todo o fluxo de fora do expediente</small></div>
+      <p>58% das conversas novas chegam com o escritório fechado — e <strong>nenhuma</strong>
+        recebe resposta humana em tempo útil. O agente de plantão atende todas: é o cenário
+        otimista da tabela, +2,24 atendimentos pagos por mês. Com o honorário informado no
+        simulador, isso é o que hoje fica na mesa. No cenário provável — resgatando só uma
+        parte do fluxo — ainda são <strong><span id="teseAnoProv">R$ 81.052</span> por
+        ano</strong>. Mude o honorário lá em cima e estes números acompanham.</p>
+    </div>
   </div>
 </section>
 
@@ -684,6 +705,9 @@
         e.target.classList.add('in');
         io.unobserve(e.target);
         contaDentro(e.target, i * 110);
+        if (e.target.classList.contains('tese-alta') && window.__reanimaTese) {
+          setTimeout(window.__reanimaTese, i * 110 + 200);
+        }
       });
     }, { threshold: 0.15, rootMargin: '0px 0px -5% 0px' });
     rvs.forEach(function (x) { io.observe(x); });
@@ -740,6 +764,11 @@
     var rot = H > 0 ? 'com honorário de ' + moeda(H) : 'sem honorário informado';
     if (cortado) rot += ' — teto do simulador: R$ 500 mil';
     document.getElementById('simHLabel').textContent = rot;
+    var elAno = document.getElementById('teseAno');
+    if (elAno) {
+      animaCelula(elAno, (G[2] * (CONSULTA + H * T) - CUSTO[2]) * 12);
+      animaCelula(document.getElementById('teseAnoProv'), (G[1] * (CONSULTA + H * T) - CUSTO[1]) * 12);
+    }
     var frase = document.getElementById('simFrase');
     if (H > 0) {
       var razao = (G[1] * (CONSULTA + H * T) - CUSTO[1]) / (G[1] * CONSULTA - CUSTO[1]);
@@ -752,6 +781,14 @@
     }
   }
   function formata() { var H = leH(); elH.value = H ? fmtBR(H, 0) : ''; }
+  window.__reanimaTese = function () {
+    var H = leH();
+    var a = document.getElementById('teseAno'), b = document.getElementById('teseAnoProv');
+    if (!a) return;
+    a.dataset.v = 0; b.dataset.v = 0;
+    animaCelula(a, (G[2] * (CONSULTA + H * T) - CUSTO[2]) * 12);
+    animaCelula(b, (G[1] * (CONSULTA + H * T) - CUSTO[1]) * 12);
+  };
   elH.addEventListener('input', recalc);
   elH.addEventListener('blur', formata);
   [].slice.call(document.querySelectorAll('.sim .preset')).forEach(function (b) {
