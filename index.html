@@ -1,0 +1,769 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<meta name="description" content="Diagnóstico do uso do Kommo no escritório Marcus Faria: o que o CRM mostra, o que está realmente acontecendo, e quanto custa a diferença.">
+<title>O CRM que ninguém lê</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@600;700&family=Public+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+  /* Archivo nos titulos, Public Sans no corpo, JetBrains Mono na procedencia.
+     Sem serifa por regra de marca. Cores do design system FARIA; os dois tons de
+     serie do grafico foram validados por script (CVD dE >= 14,7 nos dois modos). */
+
+  :root{
+    --grafite:#171C1A; --papel:#FAFAFA;
+    --lima:#7A9B10; --lima-pura:#C6F135;
+    --violeta:#6D4AFF; --magenta:#C2185B;
+    --serie-dentro:#6D4AFF; --serie-fora:#C2185B;
+    --ground:#FAFAFA; --surface:#FFFFFF; --surface-2:#F2F4F2;
+    --line:#DFE4E0; --line-forte:#C3CBC5;
+    --texto:#171C1A; --texto-2:#4A5450; --texto-3:#7C8783;
+    --font-text:"Public Sans",-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;
+    --font-display:"Archivo","Public Sans",-apple-system,"Segoe UI",Helvetica,sans-serif;
+    --mono:"JetBrains Mono",ui-monospace,"Cascadia Mono",Consolas,monospace;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --lima:#C6F135; --magenta:#F472B6; --violeta:#8E71FF;
+      --serie-dentro:#8E71FF; --serie-fora:#E9509F;
+      --ground:#121614; --surface:#1B211E; --surface-2:#222925;
+      --line:#2E3733; --line-forte:#3F4A45;
+      --texto:#FAFAFA; --texto-2:#AEB8B3; --texto-3:#78837E;
+    }
+  }
+  :root[data-theme="dark"]{
+    --lima:#C6F135; --magenta:#F472B6; --violeta:#8E71FF;
+    --serie-dentro:#8E71FF; --serie-fora:#E9509F;
+    --ground:#121614; --surface:#1B211E; --surface-2:#222925;
+    --line:#2E3733; --line-forte:#3F4A45;
+    --texto:#FAFAFA; --texto-2:#AEB8B3; --texto-3:#78837E;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--ground);color:var(--texto);
+    font-family:var(--font-text);font-size:16px;line-height:1.65;
+    -webkit-font-smoothing:antialiased}
+  .env{max-width:74ch;margin:0 auto;padding:0 24px}
+  .envw{max-width:1080px;margin:0 auto;padding:0 24px}
+  @media(max-width:640px){ .env,.envw{padding:0 18px} }
+
+  h1,h2,h3{font-family:var(--font-display);text-wrap:balance;line-height:1.15;margin:0}
+  h2{font-size:1.6rem;font-weight:700;margin:0 0 4px}
+  p{margin:0 0 1.05em}
+  strong{font-weight:600}
+  a{color:var(--violeta)}
+
+  .rot{font-size:.68rem;text-transform:uppercase;letter-spacing:.14em;
+    color:var(--texto-3);font-weight:600}
+
+  header{padding:64px 0 44px;border-bottom:1px solid var(--line)}
+  header .marca{display:flex;align-items:center;gap:10px;margin-bottom:34px}
+  header .marca svg{width:26px;height:26px}
+  header .marca span{font-size:.7rem;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--texto-3);font-weight:600}
+  header h1{font-size:clamp(2.1rem,5.6vw,3.4rem);font-weight:700;margin-bottom:18px}
+  header .lead{font-size:1.16rem;color:var(--texto-2);max-width:60ch;margin-bottom:0}
+
+  .duelo{display:grid;grid-template-columns:1fr auto 1fr;gap:0;align-items:stretch;
+    margin:40px auto 8px;border:1px solid var(--line);border-radius:3px;overflow:hidden}
+  .duelo>div{padding:26px 24px;background:var(--surface)}
+  .duelo .mid{display:flex;align-items:center;justify-content:center;padding:0 16px;
+    background:var(--surface-2);border-left:1px solid var(--line);border-right:1px solid var(--line);
+    font-size:.72rem;color:var(--texto-3);letter-spacing:.1em;text-transform:uppercase}
+  .duelo .n{font-family:var(--font-display);font-size:2.5rem;font-weight:700;
+    line-height:1;font-variant-numeric:tabular-nums;margin-bottom:8px}
+  .duelo .quem{font-size:.84rem;color:var(--texto-2);line-height:1.45;max-width:34ch}
+  .duelo .falso .n{color:var(--texto-3)}
+  .duelo .real .n{color:var(--magenta)}
+  @media(min-width:900px){ .duelo .n{font-size:3.4rem} .duelo>div{padding:32px 30px} }
+  @media(max-width:640px){
+    .duelo{grid-template-columns:1fr}
+    .duelo .mid{padding:8px;border:none;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+  }
+
+  section{padding:56px 0;border-bottom:1px solid var(--line)}
+  section:last-of-type{border-bottom:none}
+  .cab{margin-bottom:26px}
+  .cab .rot{display:block;margin-bottom:9px}
+
+  /* fatos: linhas editoriais com fio, numero grande a esquerda */
+  .fatos{border-top:1px solid var(--line-forte);margin:28px auto 4px}
+  .fato{padding:20px 4px;display:grid;grid-template-columns:150px 1fr;gap:24px;
+    align-items:baseline;border-bottom:1px solid var(--line)}
+  .fato .v{font-family:var(--font-display);font-size:1.6rem;font-weight:700;
+    font-variant-numeric:tabular-nums;line-height:1.05;color:var(--texto)}
+  .fato .v small{display:block;font-family:var(--font-text);font-size:.7rem;
+    font-weight:400;color:var(--texto-3);letter-spacing:.04em;margin-top:4px;line-height:1.4}
+  .fato .d{font-size:.95rem;color:var(--texto-2);line-height:1.6;max-width:72ch}
+  .fato .d b{color:var(--texto);font-weight:600}
+  .fato.grave .v{color:var(--magenta)}
+  .fato.bom .v{color:var(--lima)}
+  @media(min-width:900px){
+    .fato{grid-template-columns:210px 1fr;gap:36px;padding:24px 4px}
+    .fato .v{font-size:2.1rem}
+  }
+  @media(max-width:640px){
+    .fato{grid-template-columns:1fr;gap:6px}
+    .fato .v{font-size:1.35rem}
+  }
+
+  .fonte{font-family:var(--mono);font-size:.72rem;color:var(--texto-3);
+    line-height:1.6;padding:12px 20px;background:var(--surface-2);
+    border-left:2px solid var(--line-forte);margin:18px auto 0}
+  .fonte b{color:var(--texto-2);font-weight:600}
+
+  .corrige{border:1px solid var(--line);border-left:3px solid var(--violeta);
+    border-radius:3px;padding:18px 22px;margin:26px 0;background:var(--surface)}
+  .corrige .rot{color:var(--violeta);display:block;margin-bottom:7px}
+  .corrige p{font-size:.94rem;color:var(--texto-2);margin:0}
+  .corrige p+p{margin-top:.7em}
+
+  /* ---- grafico ---- */
+  .grafico{margin:30px auto 0;background:var(--surface);border:1px solid var(--line);
+    border-radius:3px;padding:22px 22px 14px;position:relative}
+  .grafico h3{font-family:var(--font-display);font-size:1rem;font-weight:600;margin:0 0 2px}
+  .grafico .sub{font-size:.8rem;color:var(--texto-3);margin:0 0 14px}
+  .legenda{display:flex;gap:18px;flex-wrap:wrap;font-size:.78rem;color:var(--texto-2);
+    margin:0 0 10px}
+  .legenda span{display:inline-flex;align-items:center;gap:7px}
+  .legenda i{width:11px;height:11px;border-radius:2px;display:inline-block}
+  .legenda .li-dentro i{background:var(--serie-dentro)}
+  .legenda .li-fora i{background:var(--serie-fora)}
+  #chHoras{display:block;width:100%;height:auto}
+  #chHoras .barra{cursor:default}
+  #chHoras text{font-family:var(--font-text)}
+  .tip{position:absolute;pointer-events:none;display:none;background:var(--grafite);
+    color:var(--papel);font-size:.75rem;line-height:1.5;padding:7px 11px;border-radius:3px;
+    white-space:nowrap;z-index:5;font-variant-numeric:tabular-nums;
+    box-shadow:0 4px 14px rgba(0,0,0,.35)}
+  .tip b{color:var(--lima-pura)}
+  details.dados{margin:14px auto 0;font-size:.8rem;color:var(--texto-3)}
+  details.dados summary{cursor:pointer}
+  details.dados table{margin-top:10px;font-size:.78rem}
+
+  table{width:100%;border-collapse:collapse;font-size:.9rem;margin:8px 0 4px;
+    font-variant-numeric:tabular-nums}
+  .rolagem{overflow-x:auto;margin:24px auto}
+  th{text-align:left;font-size:.68rem;text-transform:uppercase;letter-spacing:.1em;
+    color:var(--texto-3);font-weight:600;padding:0 14px 9px 0;border-bottom:1px solid var(--line-forte);
+    white-space:nowrap}
+  td{padding:11px 14px 11px 0;border-bottom:1px solid var(--line);vertical-align:top}
+  td:first-child{color:var(--texto);font-weight:500}
+  th.num,td.num{text-align:right;padding-right:0}
+  tr.destaque td{background:var(--surface-2);font-weight:600;color:var(--texto)}
+
+  .tese{background:var(--grafite);color:var(--papel);border-radius:3px;
+    padding:36px 32px;margin:34px auto}
+  .tese .rot{color:var(--lima-pura);display:block;margin-bottom:14px}
+  .tese .n{font-family:var(--font-display);font-size:clamp(1.7rem,4.4vw,2.5rem);
+    font-weight:700;line-height:1.2;margin-bottom:14px;color:var(--papel)}
+  .tese p{color:#AEB8B3;font-size:.96rem;margin:0;max-width:74ch}
+  .tese em{color:var(--lima-pura);font-style:normal}
+
+  footer{padding:44px 0 72px;color:var(--texto-3);font-size:.8rem;line-height:1.7}
+  footer b{color:var(--texto-2);font-weight:600}
+  @media (prefers-reduced-motion: no-preference){
+    #chHoras rect{transition:opacity .12s ease}
+  }
+
+  /* ---- reveal suave (so com JS; sem JS tudo visivel) ---- */
+  .js .rv{opacity:0;transform:translateY(16px);
+    transition:opacity .7s cubic-bezier(.22,1,.36,1),transform .7s cubic-bezier(.22,1,.36,1)}
+  .js .rv.in{opacity:1;transform:none}
+  @media print{ .js .rv{opacity:1 !important;transform:none !important} }
+
+  /* ---- simulador de honorario ---- */
+  .sim{background:var(--surface);border:1px solid var(--line);border-left:3px solid var(--lima);
+    border-radius:3px;padding:20px 22px;margin:26px 0 6px}
+  .sim .rot{color:var(--lima);display:block;margin-bottom:8px}
+  .sim label{display:block;font-family:var(--font-display);font-weight:700;font-size:1.05rem;margin-bottom:12px}
+  .sim-linha{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .sim .prefixo{font-family:var(--font-display);font-weight:700;font-size:1.2rem;color:var(--texto-2)}
+  .sim input{font-family:var(--font-display);font-weight:700;font-size:1.5rem;width:190px;
+    padding:8px 12px;border:1px solid var(--line-forte);border-radius:3px;
+    background:var(--ground);color:var(--texto);font-variant-numeric:tabular-nums}
+  .sim input:focus{outline:2px solid var(--violeta);outline-offset:1px;border-color:var(--violeta)}
+  .sim .presets{display:flex;gap:6px;flex-wrap:wrap}
+  .sim .preset{font:inherit;font-size:.78rem;padding:7px 12px;border:1px solid var(--line-forte);
+    border-radius:999px;background:transparent;color:var(--texto-2);cursor:pointer;
+    transition:border-color .15s,color .15s}
+  .sim .preset:hover{border-color:var(--lima);color:var(--texto)}
+  .sim-sub{font-size:.78rem;color:var(--texto-3);margin-top:10px}
+  td.neg{color:var(--magenta)}
+
+  /* ---- footer maximalista ---- */
+  .marca-gigante{display:block;width:100%;height:auto;color:var(--texto);margin:0 0 38px}
+  footer{border-top:1px solid var(--line);overflow:hidden}
+</style>
+</head>
+<body>
+<script>document.documentElement.className += " js";</script>
+
+<header>
+  <div class="envw">
+    <div class="marca">
+      <svg viewBox="0 0 336.57 332.8" aria-hidden="true">
+        <path fill="currentColor" d="M336.3,166.39c-5.28,94.08-63.56,154.29-156.35,165.45C88.32,342.86,18.23,257.25,2.11,166.39-14.06,75.23,64.77,7.55,165.32.49c108.05-7.59,176.15,73.76,170.98,165.9Z"/>
+        <path fill="var(--ground)" d="M108.01,155.34v-23.99h57.14l-8.2-21.88h-72.81v113.54h23.87v-45.72h43.02l-.1-.26-8.12-21.69h-34.8Z"/>
+        <path fill="var(--ground)" d="M201.71,109.47h-24.77l12.11,28.45.03-.09,16.01,37.69h-.04l20.36,47.81h27.02l-50.72-113.85Z"/>
+      </svg>
+      <span>FARIA · diagnóstico do CRM · setembro 2026</span>
+    </div>
+    <h1>O CRM que ninguém lê</h1>
+    <p class="lead">O Kommo do escritório mostra que o atendimento é instantâneo. Ele
+      está certo, e mesmo assim ninguém está sendo atendido. Este documento mede a
+      diferença entre as duas coisas — e o que ela custa.</p>
+
+    <div class="duelo rv">
+      <div class="falso">
+        <div class="n">3 s</div>
+        <div class="quem">o que o relatório do Kommo mostra como tempo de resposta</div>
+      </div>
+      <div class="mid">contra</div>
+      <div class="real">
+        <div class="n">10,6 h</div>
+        <div class="quem">o tempo até uma <b>pessoa</b> responder, medido nos eventos da conta</div>
+      </div>
+    </div>
+    <div class="fonte rv"><b>Como medimos:</b> 5.000 eventos de chat da conta, separando
+      cada resposta pelo autor. O robô de boas-vindas responde em segundos e conta como
+      resposta no painel nativo. Os dois números são verdadeiros. Os dois são mentira
+      operacional.</div>
+  </div>
+</header>
+
+<section>
+  <div class="env">
+    <div class="cab rv">
+      <span class="rot">O que este documento é</span>
+      <h2>126 medições, 273 tentativas de derrubá-las</h2>
+    </div>
+    <p>Cada afirmação aqui passou por três revisores independentes, com instrução de
+      <strong>refutar</strong>: um refazia a conta do zero, outro perguntava se o número
+      mudava alguma decisão, o terceiro procurava se ele enganava — média que esconde
+      distribuição, recorte apresentado como total, fonte desatualizada.</p>
+    <p><strong>217 afirmações foram derrubadas.</strong> O que sobrou está aqui, e cada
+      número traz de onde veio, porque a primeira pergunta que um número desses merece é
+      essa.</p>
+
+    <div class="corrige rv">
+      <span class="rot">O que os revisores corrigiram</span>
+      <p>A base havia sido medida em <strong>10.000 leads</strong> — era o teto da
+        paginação, não o tamanho da conta. São <strong>15.247</strong>.</p>
+      <p>A primeira leitura dizia que <strong>38% dos leads nunca recebem resposta
+        humana</strong>. Estava contando como robô o atendente que responde pelo celular.
+        O número defensável é <strong>9% de abandono</strong> — e, como se vê adiante, ele
+        é acompanhado de algo pior.</p>
+      <p>E a primeira conta de receita estava <strong>entre 5 e 40 vezes otimista</strong>.
+        A versão corrigida é bem menor, e sobrevive.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="env">
+    <div class="cab rv">
+      <span class="rot">Primeira constatação</span>
+      <h2>O Kommo é uma caixa de entrada, não um CRM</h2>
+    </div>
+    <p>A plataforma tem 91 integrações disponíveis, campos personalizados, motivos de
+      perda, relatórios por etapa e por responsável. O escritório usa o campo de mensagem.</p>
+  </div>
+  <div class="envw">
+    <div class="fatos">
+      <div class="rv fato grave">
+        <div class="v">0<small>de 15.247 leads</small></div>
+        <div class="d">têm <b>qualquer campo personalizado preenchido</b>. Os 11 campos que
+          existem foram criados sozinhos pelo Kommo — dez são de rastreio de anúncio e
+          nunca receberam um valor. Não há campo de área, de origem, de honorário ou de
+          prazo. Não existe como responder "de onde vem o lead que fecha".</div>
+      </div>
+      <div class="rv fato grave">
+        <div class="v">0<small>de 7.105 perdas</small></div>
+        <div class="d">têm <b>motivo de perda registrado</b>. São 46,6% de tudo que já
+          entrou na conta, e sobre isso não há uma linha de explicação estruturada — não
+          dá para saber se perde por preço, por demora ou por área que o escritório não
+          atende. Os quatro motivos cadastrados são os de demonstração do Kommo, em
+          vocabulário de loja virtual.</div>
+      </div>
+      <div class="rv fato">
+        <div class="v">19<small>funis</small></div>
+        <div class="d">que são <b>o mesmo processo repetido</b>. Descontadas as etapas que a
+          plataforma cria sozinha, seis nomes cobrem 56% do que a equipe montou, três pares
+          de funis têm etapas idênticas e treze não têm nenhuma etapa exclusiva. O funil
+          virou um campo "assunto" implementado como estrutura — e por isso nenhum
+          relatório consegue somar quantos casos estão em proposta sem varrer dezenove
+          listas.</div>
+      </div>
+      <div class="rv fato">
+        <div class="v">20<small>pessoas, 1 login</small></div>
+        <div class="d">A conta tem <b>um único usuário</b>, mas vinte pessoas trabalham os
+          leads — e o rastro disso é uma etiqueta com o primeiro nome de quem atendeu.
+          73,7% do uso de etiquetas é isso. Sem usuários próprios não existe relatório por
+          atendente, nem fila, nem prazo individual.</div>
+      </div>
+      <div class="rv fato grave">
+        <div class="v">74<small>leads antigos por mês</small></div>
+        <div class="d">se movem no funil. Em trinta dias entraram <b>14.378 mensagens</b> e
+          saíram <b>948 movimentos de etapa</b> — e 91% deles foram de leads criados no
+          próprio mês. No ritmo atual, esvaziar os 8.008 leads abertos levaria
+          <b>nove anos</b>.</div>
+      </div>
+    </div>
+    <div class="fonte rv"><b>Como medimos:</b> varredura de leitura da conta com limite de
+      taxa (1,48 requisições por segundo contra o teto de 7 da plataforma), gravada em
+      arquivo e analisada localmente. Cadastro completo; leads e eventos em amostra
+      declarada de 5.000 cada, os mais recentes.</div>
+  </div>
+</section>
+
+<section>
+  <div class="env">
+    <div class="cab rv">
+      <span class="rot">Segunda constatação</span>
+      <h2>A equipe não é lenta. O escritório é que fecha.</h2>
+    </div>
+    <p>Esta foi a correção mais importante que os revisores fizeram, e ela muda o
+      argumento inteiro — para melhor.</p>
+  </div>
+
+  <div class="envw">
+    <div class="grafico rv" id="boxHoras">
+      <h3>A que horas o lead escreve pela primeira vez</h3>
+      <p class="sub">518 conversas novas · primeira mensagem de cada lead · horário de Campo Grande</p>
+      <div class="legenda">
+        <span class="li-dentro"><i></i>no expediente (seg–sex, 8h–18h)</span>
+        <span class="li-fora"><i></i>com o escritório fechado — noite e fim de semana</span>
+      </div>
+      <svg id="chHoras" viewBox="0 0 960 270" role="img"
+        aria-label="Barras por hora do dia: 58% das conversas novas chegam com o escritório fechado; o pico é às 22h, com 47 conversas."></svg>
+      <div class="tip" id="tipHoras"></div>
+      <details class="dados">
+        <summary>ver os números do gráfico</summary>
+        <div class="rolagem"><table id="tbHoras"></table></div>
+      </details>
+    </div>
+    <div class="fonte rv"><b>Leitura:</b> 301 das 518 conversas novas (58%) começam com o
+      escritório fechado, e o pico do dia inteiro é às <b>22h</b> — acima de qualquer
+      hora do expediente. No recorte de 30 dias conferido pelos revisores, a proporção
+      foi 53%: muda o recorte, não muda a história.</div>
+
+    <div class="fatos">
+      <div class="rv fato bom">
+        <div class="v">56 min<small>em horário útil</small></div>
+        <div class="d">é a espera mediana por uma pessoa <b>quando o escritório está
+          aberto</b>. A equipe atende, e atende razoavelmente rápido. O problema nunca foi
+          capacidade nem disciplina.</div>
+      </div>
+      <div class="rv fato grave">
+        <div class="v">10,6 h<small>na média do dia inteiro</small></div>
+        <div class="d">é a mesma espera contando as horas em que não há ninguém. A
+          diferença entre 56 minutos e 10,6 horas <b>é inteiramente o intervalo das 18h às
+          8h e o fim de semana</b>.</div>
+      </div>
+      <div class="rv fato grave">
+        <div class="v">0<small>de 441 leads</small></div>
+        <div class="d">que chegaram fora do expediente receberam resposta de uma pessoa em
+          até quinze minutos. <b>Nenhum.</b> Não é uma cauda de atendimento mais lento —
+          é uma parede.</div>
+      </div>
+      <div class="rv fato grave">
+        <div class="v">2 de 3<small>não voltam</small></div>
+        <div class="d">Dos leads não atendidos em 24 horas, <b>dois terços nunca mais são
+          atendidos</b>. Não é atraso que se recupera depois: é perda definitiva. E sessenta
+          deles insistiram — alguns bateram na porta por quase duas semanas.</div>
+      </div>
+      <div class="rv fato grave">
+        <div class="v">5 meses<small>de piora contínua</small></div>
+        <div class="d">O tempo de resposta <b>piora mês a mês há cinco meses</b>, sem sinal
+          de virada. E 84% dos leads abertos não ouvem uma pessoa há mais de trinta dias.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="env">
+    <div class="corrige rv">
+      <span class="rot">Por que isso importa mais que o número anterior</span>
+      <p>"38% dos leads são ignorados" é um número que se contesta em trinta segundos,
+        porque a equipe responde pelo celular.</p>
+      <p>"A equipe atende em 56 minutos quando está no escritório, e <strong>zero</strong>
+        pessoas foram atendidas fora dele" não se contesta — e aponta para a solução com
+        precisão. O valor de um atendimento 24h não está espalhado pelo dia: está
+        concentrado entre 18h e 8h e nos fins de semana.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="env">
+    <div class="cab rv">
+      <span class="rot">A conta</span>
+      <h2>O que isso vale, com as premissas na mesa</h2>
+    </div>
+    <p>A projeção anterior — R$ 9.700 por mês — não sobreviveu. Ela usava a taxa de
+      conversão entre leads <em>fechados</em> (1,7%) quando o correto é sobre o lead
+      <em>atendido</em> (0,69%), e partia de uma base 35% menor que a real. Corrigida,
+      fica assim:</p>
+  </div>
+  <div class="envw">
+    <div class="sim rv">
+      <span class="rot">Simule com o número que só o escritório pode saber</span>
+      <label for="simH">Honorário médio de um caso fechado</label>
+      <div class="sim-linha">
+        <span class="prefixo">R$</span>
+        <input id="simH" type="text" inputmode="numeric" autocomplete="off" placeholder="20.000" value="20.000" aria-label="Honorário médio do caso, em reais">
+        <div class="presets">
+          <button type="button" class="preset" data-h="5000">R$ 5 mil</button>
+          <button type="button" class="preset" data-h="20000">R$ 20 mil</button>
+          <button type="button" class="preset" data-h="42000">R$ 42 mil</button>
+        </div>
+      </div>
+    </div>
+    <div class="rolagem rv">
+      <table>
+        <thead>
+          <tr>
+            <th>Cenário</th>
+            <th class="num">Atendimentos novos/mês</th>
+            <th class="num">Receita bruta/mês</th>
+            <th class="num">Líquido/mês</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>Pessimista</td><td class="num">+0,19</td><td class="num" id="simB0">R$ 1.468</td><td class="num" id="simL0">R$ 118</td></tr>
+          <tr class="destaque"><td>Provável</td><td class="num">+0,95</td><td class="num" id="simB1">R$ 7.504</td><td class="num" id="simL1">R$ 6.754</td></tr>
+          <tr><td>Otimista</td><td class="num">+2,24</td><td class="num" id="simB2">R$ 17.659</td><td class="num" id="simL2">R$ 17.509</td></tr>
+        </tbody>
+      </table>
+      <div class="sim-sub">Tabela calculada <b id="simHLabel">com honorário de R$ 20.000</b> — mude o valor acima e os números se refazem na hora.</div>
+    </div>
+    <div class="fonte rv"><b>Como a conta funciona:</b> a taxa histórica da própria conta é
+      <b>0,69% — a fração dos leads atendidos que acaba pagando o atendimento de
+      R$ 1.200</b> (não é "0,69% fecham caso": é quem paga a primeira consulta). Os
+      cenários da tabela (+0,19 · +0,95 · +2,24 atendimentos novos/mês) vêm do
+      levantamento verificado e embutem duas coisas: a fração do fluxo sem resposta que o
+      plantão de fato resgata e o ganho de velocidade sobre quem já é atendido. Receita
+      bruta = atendimentos × (R$ 1.200 + honorário ÷ 3 — premissa explícita: 1 em cada 3
+      atendimentos vira contrato). Líquido = bruta − custo do cenário (R$ 1.350 · R$ 750 ·
+      R$ 150/mês, incluindo hora humana). <b>Nota de recalibração:</b> a primeira versão
+      desta tabela misturava bruta e líquida em colunas de rótulo único — os antigos
+      R$ 1.490 e R$ 14.000 não eram reconstruíveis de fórmula nenhuma; agora cada célula
+      sai da conta acima. <b>O que não sabemos:</b> quanto vale um caso fechado — por isso
+      o campo acima é seu.</div>
+  </div>
+  <div class="env">
+    <p style="margin-top:18px" id="simFrase">Com esse honorário, o cenário provável rende
+      <strong>17,1 vezes</strong> o que rende contando só os atendimentos — e a diferença
+      não depende de nada técnico. Depende deste campo, que o escritório ainda não mede.</p>
+    <p>O honorário do caso não existe em campo nenhum do Kommo. Enquanto ele não existir,
+      qualquer retorno que alguém apresente é opinião com casas decimais.</p>
+  </div>
+  <div class="envw">
+    <div class="tese rv">
+      <span class="rot">O argumento que dispensa o honorário</span>
+      <div class="n">Com a infraestrutura na conta — R$ 210/mês de servidor e IA —, o sistema se paga se recuperar <em>um atendimento a cada 5,7 meses</em>.</div>
+      <p>Para dar prejuízo nesse nível, as 475 pessoas por mês que escrevem e ficam sem
+        resposta em tempo útil teriam que converter <strong>quase vinte vezes pior</strong>
+        que os 0,69% históricos — menos de um atendimento a cada 2.714 pessoas. E mesmo
+        carregando a hora humana do cenário provável (R$ 750/mês), a régua fica em um
+        atendimento a cada 1,6 mês: cinco vezes pior que o histórico. Não é preciso saber
+        o honorário. Basta acreditar que, dessas pessoas, mais de uma a cada 2.714 vale
+        um atendimento.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="env">
+    <div class="cab rv">
+      <span class="rot">O que a OAB diz</span>
+      <h2>A norma não é obstáculo — ela descreve o caso</h2>
+    </div>
+    <p>O Anexo Único do Provimento 205/2021 cita, quase palavra por palavra, as três
+      funções de um atendimento automatizado de triagem: responder primeiras dúvidas,
+      encaminhar primeiras informações e coletar dados e documentos. <strong>O chatbot de
+      triagem é expressamente permitido.</strong></p>
+    <p>A linha vermelha é outra, e o desenho do sistema já a respeita por construção:
+      <strong>não responder consulta jurídica a quem ainda não é cliente</strong>. E duas
+      exigências que a norma faz já estão implementadas — declarar que é uma inteligência
+      artificial no início da conversa, e passar para uma pessoa quando o interlocutor
+      pedir.</p>
+    <p>O levantamento também mapeou uma obrigação da OAB que o escritório ainda não
+      cumpre, registrada para tratamento interno.</p>
+  </div>
+</section>
+
+<footer>
+  <svg class="marca-gigante" viewBox="0 0 391 90.43" role="img" aria-label="FARIA">
+    <g fill="currentColor">
+      <path d="M65.3.31v17.36H19.22v19.04h31.06v17.42h-31.06v36.29H0V.31h65.3Z"/>
+      <path d="M57.8,90.42L93.97,0h19.76l36.11,90.41h-20.73l-7.87-20.67h-35.86l-7.87,20.67h-19.7ZM114.69,52.45l-11.35-29.92-11.41,29.92h22.77Z"/>
+      <path d="M157.54,90.42V.31h48.24c15.62,0,26.25,10.57,26.25,26.19,0,12.8-7.15,22.29-18.38,25.29l22.59,38.63h-22.23l-20.73-37.61h-16.52v37.61h-19.22ZM212.32,26.5c0-5.35-3.49-8.83-8.89-8.83h-26.67v17.72h26.67c5.41,0,8.89-3.49,8.89-8.89Z"/>
+      <path d="M298.96,90.42L335.13,0h19.76l36.11,90.41h-20.73l-7.87-20.67h-35.86l-7.87,20.67h-19.7ZM355.85,52.45l-11.35-29.92-11.41,29.92h22.77Z"/>
+      <path d="M255.25,0h-19l8.59,22.59.02-.07,11.35,29.93h-.02l14.44,37.97h20.73L255.25,0Z"/>
+    </g>
+  </svg>
+  <div class="env">
+    <p><b>Método.</b> Levantamento de leitura da conta, sem nenhuma escrita, com limite de
+      taxa e registro de cada requisição. Cinco frentes de análise em paralelo e três
+      revisores por afirmação, com instrução de refutar. 126 medições produzidas, 273
+      vereditos, 217 afirmações descartadas.</p>
+    <p><b>Confidencialidade.</b> Nenhum dado de cliente aparece neste documento. Todos os
+      números são agregados, e as conversas de WhatsApp não foram acessadas — o conteúdo
+      delas não é acessível pela API da plataforma.</p>
+    <p>FARIA · sistema operacional do escritório Marcus Faria · Dourados/MS</p>
+  </div>
+</footer>
+
+<script>
+(function () {
+  // Dados reais: primeira mensagem de cada lead na amostra de 5.000 eventos,
+  // hora local de Campo Grande. Computado de dados-kommo/eventos_chat.json.
+  var DENTRO = [0,0,0,0,0,0,0,0,17,18,38,20,22,24,15,16,27,20,0,0,0,0,0,0];
+  var FORA   = [10,6,3,1,6,10,18,17,6,5,5,4,9,4,7,12,6,1,22,29,31,28,47,14];
+
+  var svg = document.getElementById('chHoras');
+  var tip = document.getElementById('tipHoras');
+  var box = document.getElementById('boxHoras');
+  var NS = 'http://www.w3.org/2000/svg';
+
+  var W = 960, H = 270, mL = 34, mR = 6, mT = 22, mB = 40;
+  var plotW = W - mL - mR, plotH = H - mT - mB;
+  var max = 50; // teto redondo acima do pico (47)
+  var passo = plotW / 24, larg = Math.min(26, passo - 10);
+
+  function el(tag, attrs) {
+    var e = document.createElementNS(NS, tag);
+    for (var k in attrs) e.setAttribute(k, attrs[k]);
+    return e;
+  }
+  function y(v) { return mT + plotH * (1 - v / max); }
+
+  // grade recessiva + eixo y
+  [0, 25, 50].forEach(function (g) {
+    svg.appendChild(el('line', { x1: mL, x2: W - mR, y1: y(g), y2: y(g),
+      stroke: 'var(--line)', 'stroke-width': 1 }));
+    var t = el('text', { x: mL - 7, y: y(g) + 3.5, 'text-anchor': 'end',
+      'font-size': 10, fill: 'var(--texto-3)' });
+    t.textContent = g; svg.appendChild(t);
+  });
+
+  // faixa do expediente sob o eixo
+  var x8 = mL + 8 * passo + (passo - larg) / 2;
+  var x18 = mL + 17 * passo + (passo - larg) / 2 + larg;
+  svg.appendChild(el('line', { x1: x8, x2: x18, y1: H - mB + 22, y2: H - mB + 22,
+    stroke: 'var(--line-forte)', 'stroke-width': 1 }));
+  var rotExp = el('text', { x: (x8 + x18) / 2, y: H - mB + 35, 'text-anchor': 'middle',
+    'font-size': 10, fill: 'var(--texto-3)' });
+  rotExp.textContent = 'expediente';
+  svg.appendChild(rotExp);
+
+  var GAP = 2; // espacador entre segmentos empilhados
+  for (var h = 0; h < 24; h++) {
+    var x = mL + h * passo + (passo - larg) / 2;
+    var d = DENTRO[h], f = FORA[h], tot = d + f;
+    var g = el('g', { class: 'barra', 'data-h': h });
+
+    if (d > 0) {
+      var hd = plotH * d / max;
+      g.appendChild(el('rect', { x: x, y: y(d), width: larg, height: Math.max(hd, 2),
+        fill: 'var(--serie-dentro)', rx: f > 0 ? 0 : 4 }));
+    }
+    if (f > 0) {
+      var hf = plotH * f / max;
+      var yf = y(tot);
+      g.appendChild(el('rect', { x: x, y: yf, width: larg,
+        height: Math.max(hf - (d > 0 ? GAP : 0), 2), fill: 'var(--serie-fora)', rx: 4 }));
+    }
+    // alvo de hover maior que a marca
+    var hit = el('rect', { x: mL + h * passo, y: mT, width: passo, height: plotH + mB - 14,
+      fill: 'transparent' });
+    (function (hh, dd, ff) {
+      hit.addEventListener('mousemove', function (ev) {
+        tip.innerHTML = '<b>' + hh + 'h</b> — ' + (dd + ff) + ' conversa' + ((dd + ff) === 1 ? '' : 's') +
+          '<br>' + dd + ' no expediente · ' + ff + ' fora';
+        tip.style.display = 'block';
+        var r = box.getBoundingClientRect();
+        var tx = ev.clientX - r.left + 14, ty = ev.clientY - r.top - 40;
+        if (tx + tip.offsetWidth > r.width - 10) tx -= tip.offsetWidth + 26;
+        tip.style.left = tx + 'px'; tip.style.top = ty + 'px';
+      });
+      hit.addEventListener('mouseleave', function () { tip.style.display = 'none'; });
+    })(h, d, f);
+    g.appendChild(hit);
+    svg.appendChild(g);
+
+    // rotulos de hora, de 2 em 2
+    if (h % 2 === 0) {
+      var tx2 = el('text', { x: x + larg / 2, y: H - mB + 14, 'text-anchor': 'middle',
+        'font-size': 10, fill: 'var(--texto-3)' });
+      tx2.textContent = h + 'h';
+      svg.appendChild(tx2);
+    }
+  }
+
+  // rotulos diretos so nos dois picos
+  [[22, FORA[22], 'var(--serie-fora)'], [10, DENTRO[10] + FORA[10], 'var(--texto-2)']]
+    .forEach(function (p) {
+      var x = mL + p[0] * passo + passo / 2;
+      var t = el('text', { x: x, y: y(p[1]) - 6, 'text-anchor': 'middle',
+        'font-size': 11, 'font-weight': 600, fill: p[2] });
+      t.textContent = p[1];
+      svg.appendChild(t);
+    });
+
+  // tabela acessivel com os mesmos numeros
+  var tb = document.getElementById('tbHoras');
+  var html = '<thead><tr><th>Hora</th><th class="num">No expediente</th><th class="num">Fechado</th><th class="num">Total</th></tr></thead><tbody>';
+  for (var i = 0; i < 24; i++) {
+    html += '<tr><td>' + i + 'h</td><td class="num">' + DENTRO[i] + '</td><td class="num">' +
+      FORA[i] + '</td><td class="num">' + (DENTRO[i] + FORA[i]) + '</td></tr>';
+  }
+  tb.innerHTML = html + '</tbody>';
+})();
+</script>
+<script>
+(function () {
+  // ---------- reveal com stagger + contagem dos numeros ----------
+  // Por decisao de identidade do projeto, as animacoes rodam sempre (mesmo com
+  // prefers-reduced-motion) — igual ao site do diario. Sem JS, tudo visivel.
+
+  function preparaContagem(el) {
+    // acha o primeiro numero no primeiro text node do elemento (preserva <small>/<b>)
+    for (var i = 0; i < el.childNodes.length; i++) {
+      var nd = el.childNodes[i];
+      if (nd.nodeType === 3 && /\d/.test(nd.nodeValue)) {
+        var m = nd.nodeValue.match(/(\d{1,3}(?:\.\d{3})+|\d+)(,\d+)?/);
+        if (!m) return null;
+        var bruto = m[0];
+        var dec = m[2] ? m[2].length - 1 : 0;
+        var alvo = parseFloat(bruto.replace(/\./g, '').replace(',', '.'));
+        return { node: nd, texto: nd.nodeValue, ini: m.index, fim: m.index + bruto.length, alvo: alvo, dec: dec };
+      }
+    }
+    return null;
+  }
+  function fmtBR(v, dec) {
+    return v.toLocaleString('pt-BR', { minimumFractionDigits: dec, maximumFractionDigits: dec });
+  }
+  function conta(info, dur, atraso) {
+    if (!info || !info.alvo) return;
+    setTimeout(function () {
+      var t0 = null;
+      function passo(ts) {
+        if (!t0) t0 = ts;
+        var p = Math.min((ts - t0) / dur, 1);
+        var e = 1 - Math.pow(1 - p, 3);
+        var v = p === 1 ? info.alvo : info.alvo * e;
+        info.node.nodeValue = info.texto.slice(0, info.ini) + fmtBR(v, info.dec) + info.texto.slice(info.fim);
+        if (p < 1) requestAnimationFrame(passo);
+      }
+      requestAnimationFrame(passo);
+    }, atraso || 0);
+  }
+
+  var rvs = [].slice.call(document.querySelectorAll('.rv'));
+  function contaDentro(el, base) {
+    var nums = [].slice.call(el.querySelectorAll('.v, .n'));
+    if (!nums.length && (el.classList.contains('v') || el.classList.contains('n'))) nums = [el];
+    nums.forEach(function (nEl, j) {
+      if (nEl.dataset.contado) return;
+      nEl.dataset.contado = '1';
+      conta(preparaContagem(nEl), 950, base + j * 140 + 150);
+    });
+  }
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (ents) {
+      var vis = ents.filter(function (e) { return e.isIntersecting; });
+      vis.forEach(function (e, i) {
+        e.target.style.transitionDelay = (i * 110) + 'ms';
+        e.target.classList.add('in');
+        io.unobserve(e.target);
+        contaDentro(e.target, i * 110);
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -5% 0px' });
+    rvs.forEach(function (x) { io.observe(x); });
+  } else {
+    rvs.forEach(function (x) { x.classList.add('in'); contaDentro(x, 0); });
+  }
+
+  // ---------- simulador de honorario ----------
+  // Modelo do levantamento (achado de receita, verificado): cada atendimento pago
+  // vale R$ 1.200 + t x H, com t = 1/3 (1 em cada 3 atendimentos vira contrato —
+  // premissa explicita) e H = honorario medio do caso. Ganhos/mes por cenario
+  // derivados das colunas verificadas: com H = 0 reproduzem 224/1.145/2.694; com
+  // H = 20.000, o liquido provavel reproduz os R$ 6.754 publicados.
+  var G = [0.18667, 0.95394, 2.24483];
+  var CUSTO = [1350, 750, 150];
+  var CONSULTA = 1200, T = 1 / 3;
+  var elH = document.getElementById('simH');
+  if (!elH) return;
+
+  function moeda(v) {
+    var neg = v < 0;
+    var s = 'R$ ' + fmtBR(Math.abs(Math.round(v)), 0);
+    return neg ? '−' + s : s;
+  }
+  function leH() {
+    // corta a parte decimal ANTES de limpar: "R$ 50.000,00" é 50.000, não 5.000.000
+    var d = String(elH.value || '').split(',')[0].replace(/\D/g, '');
+    var n = d ? parseInt(d, 10) : 0;
+    cortado = n > 500000;
+    return cortado ? 500000 : n;
+  }
+  var cortado = false;
+  function animaCelula(td, valor) {
+    td.classList.toggle('neg', valor < 0);
+    var de = parseFloat(td.dataset.v || '0');
+    td.dataset.v = valor;
+    var t0 = null, dur = 520;
+    function passo(ts) {
+      if (!t0) t0 = ts;
+      var p = Math.min((ts - t0) / dur, 1);
+      var e = 1 - Math.pow(1 - p, 3);
+      td.textContent = moeda(de + (valor - de) * e);
+      if (p < 1) requestAnimationFrame(passo);
+    }
+    requestAnimationFrame(passo);
+  }
+  function recalc() {
+    var H = leH();
+    for (var i = 0; i < 3; i++) {
+      var bruta = G[i] * (CONSULTA + H * T);
+      animaCelula(document.getElementById('simB' + i), bruta);
+      animaCelula(document.getElementById('simL' + i), bruta - CUSTO[i]);
+    }
+    var rot = H > 0 ? 'com honorário de ' + moeda(H) : 'sem honorário informado';
+    if (cortado) rot += ' — teto do simulador: R$ 500 mil';
+    document.getElementById('simHLabel').textContent = rot;
+    var frase = document.getElementById('simFrase');
+    if (H > 0) {
+      var razao = (G[1] * (CONSULTA + H * T) - CUSTO[1]) / (G[1] * CONSULTA - CUSTO[1]);
+      frase.innerHTML = 'Com esse honorário, o cenário provável rende <strong>' +
+        fmtBR(razao, 1).replace(',0', '') + ' vezes</strong> o que rende contando só os atendimentos — ' +
+        'e a diferença não depende de nada técnico. Depende deste campo, que o escritório ainda não mede.';
+    } else {
+      frase.innerHTML = 'Sem o honorário, a conta acima é só o atendimento de R$ 1.200 — ' +
+        'o retorno real do caso fica invisível. <strong>Digite um valor e veja.</strong>';
+    }
+  }
+  function formata() { var H = leH(); elH.value = H ? fmtBR(H, 0) : ''; }
+  elH.addEventListener('input', recalc);
+  elH.addEventListener('blur', formata);
+  [].slice.call(document.querySelectorAll('.sim .preset')).forEach(function (b) {
+    b.addEventListener('click', function () {
+      elH.value = b.dataset.h;
+      recalc();
+      formata();
+    });
+  });
+  recalc();
+})();
+</script>
+
+</body>
+</html>
